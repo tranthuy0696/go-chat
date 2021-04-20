@@ -8,25 +8,24 @@ import (
 	"net/url"
 	"os"
 
-	"golang.org/x/oauth2/clientcredentials"
+	"github.com/joho/godotenv"
 )
 
 var (
-	DefaultBaseURL  = os.Getenv("KEYCLOAK_BASE_URL")
-	DefaultClientId = os.Getenv("KEYCLOAK_CLIENT_ID")
-	DefaultRealm    = os.Getenv("KEYCLOAK_REALMS")
+	DefaultBaseURL       = ""
+	DefaultClientId      = ""
+	DefaultRealm         = ""
+	DefaultAdminUsername = ""
+	DefaultAdminPassword = ""
 )
 
-type RestClient struct {
-	baseURL   string
-	userAgent string
-	config    clientcredentials.Config
-}
-
-type RestError struct {
-	Request      *http.Request
-	Response     *http.Response
-	ResponseBody []byte
+func init() {
+	godotenv.Load(".env")
+	DefaultBaseURL = os.Getenv("KEYCLOAK_BASE_URL")
+	DefaultClientId = os.Getenv("KEYCLOAK_CLIENT_ID")
+	DefaultRealm = os.Getenv("KEYCLOAK_REALMS")
+	DefaultAdminUsername = os.Getenv("KEYCLOAK_ADMIN_USERNAME")
+	DefaultAdminPassword = os.Getenv("KEYCLOAK_ADMIN_PASSWORD")
 }
 
 //A RestClientOption sets an option on a RestClient
@@ -34,7 +33,7 @@ type RestClientOption func(*RestClient)
 
 func PasswordAuth(username, password string) RestClientOption {
 	return func(c *RestClient) {
-		c.config.EndpointParams = url.Values{
+		c.Config.EndpointParams = url.Values{
 			"grant_type": {"password"},
 			"username":   {username},
 			"password":   {password},
@@ -67,4 +66,85 @@ func newRequestJSON(method, urlStr string, body interface{}) (*http.Request, err
 	}
 	req.Header.Set("Content-Type", "application/json")
 	return req, nil
+}
+
+func GetToken(username, password string) (TokenResponse, error) {
+
+	body := url.Values{
+		"grant_type": {"password"},
+		"username":   {username},
+		"password":   {password},
+		"client_id":  {DefaultClientId},
+	}
+
+	res, err := http.PostForm(DefaultBaseURL+getTokenURLPathForRealm(DefaultRealm), body)
+	var response TokenResponse
+	if err != nil {
+		return response, err
+	}
+
+	defer res.Body.Close()
+
+	errParseJson := json.NewDecoder(res.Body).Decode(&response)
+
+	if errParseJson != nil {
+		return response, errParseJson
+	}
+	return response, nil
+
+}
+
+func GetTokenFromAdminUser() (TokenResponse, error) {
+	body := url.Values{
+		"grant_type": {"password"},
+		"username":   {DefaultAdminUsername},
+		"password":   {DefaultAdminPassword},
+		"client_id":  {DefaultClientId},
+	}
+
+	res, err := http.PostForm(DefaultBaseURL+getTokenURLPathForRealm(DefaultRealm), body)
+	var response TokenResponse
+	if err != nil {
+		return response, err
+	}
+
+	defer res.Body.Close()
+	// bodyRes, _ := io.ReadAll(res.Body)
+	// sb := string(bodyRes)
+
+	errParseJson := json.NewDecoder(res.Body).Decode(&response)
+
+	if errParseJson != nil {
+		return response, errParseJson
+	}
+	return response, nil
+}
+
+func CreateUser() (User, error){
+	token, err := GetTokenFromAdminUser()
+	if err != nil {
+		// throw err
+		} else {
+		response User
+		urlCreateUser := DefaultBaseURL + "/realms/" + DefaultRealm + "/users"
+		client := &http.Client{}
+		body := url.Values{
+			"firstName": {"xyzabc"},
+			"lastName":  {"usernxyzame"},
+			"email":     {"demo2@gmail.com"},
+			"enabled":   {"true"},
+		}
+		req, _ := http.NewRequest("POST", urlCreateUser, bytes.NewReader(io.ReadAll(body)))
+		req.Header.Set("Authorization", "Bearer "+token.AccessToken)
+		req.Header.Set("Content-Type", "application/json")
+		res, _ := client.Do(req)
+
+		defer res.Body.Close()
+		errParseJson := json.NewDecoder(res.Body).Decode(&response)
+		if (errParseJson != nil) {
+			//throw exception
+		}
+		return response, nil
+	}
+
 }
