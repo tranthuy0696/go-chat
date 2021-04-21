@@ -17,11 +17,17 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error loading .env file")
 	}
-	res, err := keycloak.GetTokenFromAdminUser()
+	// res, err := keycloak.GetTokenFromAdminUser()
+	// if err != nil {
+	// 	fmt.Println("met ghe ", err)
+	// } else {
+	// 	fmt.Println("rs ", res.AccessToken)
+	// }
+
+	resp, err := keycloak.CreateUser()
 	if err != nil {
-		fmt.Println("met ghe ", err)
-	} else {
-		fmt.Println("rs ", res.AccessToken)
+		fmt.Println("Errorrr")
 	}
+	fmt.Println("response ", resp)
 
 }

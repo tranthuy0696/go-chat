@@ -120,31 +120,34 @@ func GetTokenFromAdminUser() (TokenResponse, error) {
 	return response, nil
 }
 
-func CreateUser() (User, error){
+func CreateUser() (*User, error) {
 	token, err := GetTokenFromAdminUser()
 	if err != nil {
-		// throw err
-		} else {
-		response User
-		urlCreateUser := DefaultBaseURL + "/realms/" + DefaultRealm + "/users"
-		client := &http.Client{}
-		body := url.Values{
-			"firstName": {"xyzabc"},
-			"lastName":  {"usernxyzame"},
-			"email":     {"demo2@gmail.com"},
-			"enabled":   {"true"},
-		}
-		req, _ := http.NewRequest("POST", urlCreateUser, bytes.NewReader(io.ReadAll(body)))
-		req.Header.Set("Authorization", "Bearer "+token.AccessToken)
-		req.Header.Set("Content-Type", "application/json")
-		res, _ := client.Do(req)
-
-		defer res.Body.Close()
-		errParseJson := json.NewDecoder(res.Body).Decode(&response)
-		if (errParseJson != nil) {
-			//throw exception
-		}
-		return response, nil
+		return nil, err
 	}
+	var response User
+	urlCreateUser := DefaultBaseURL + "/admin/realms/" + DefaultRealm + "/users"
+	client := &http.Client{}
+	var body = []byte(`{
+		"username": "thuthuytthuy1",
+		"lastName": "tran",
+		"enabled": true
+	}`)
+	req, err := http.NewRequest("POST", urlCreateUser, bytes.NewBuffer(body))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Authorization", "Bearer "+token.AccessToken)
+	req.Header.Set("Content-Type", "application/json")
+	res, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+	errParseJson := json.NewDecoder(res.Body).Decode(&response)
+	if errParseJson != nil {
+		return nil, errParseJson
+	}
+	return &response, nil
 
 }
