@@ -120,7 +120,7 @@ func GetTokenFromAdminUser() (TokenResponse, error) {
 	return response, nil
 }
 
-func CreateUser() (*User, error) {
+func CreateUser(data User) (*User, error) {
 	token, err := GetTokenFromAdminUser()
 	if err != nil {
 		return nil, err
@@ -128,11 +128,17 @@ func CreateUser() (*User, error) {
 	var response User
 	urlCreateUser := DefaultBaseURL + "/admin/realms/" + DefaultRealm + "/users"
 	client := &http.Client{}
-	var body = []byte(`{
-		"username": "thuthuytthuy1",
-		"lastName": "tran",
-		"enabled": true
-	}`)
+	// var body = []byte(`{
+	// 	"username": "thuthuytthuy1",
+	// 	"lastName": "tran",
+	// 	"enabled": true
+	// }`)
+	// req, err := http.NewRequest("POST", urlCreateUser, bytes.NewBuffer(body))
+	data.Enabled = true
+	body, err := json.Marshal(data)
+	if err != nil {
+		return nil, err
+	}
 	req, err := http.NewRequest("POST", urlCreateUser, bytes.NewBuffer(body))
 	if err != nil {
 		return nil, err

@@ -1,10 +1,9 @@
 package main
 
 import (
-	"fmt"
-	"go-chat/keycloak"
 	"log"
 
+	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 )
 
@@ -17,17 +16,11 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error loading .env file")
 	}
-	// res, err := keycloak.GetTokenFromAdminUser()
-	// if err != nil {
-	// 	fmt.Println("met ghe ", err)
-	// } else {
-	// 	fmt.Println("rs ", res.AccessToken)
-	// }
+	// Init Router
+	router := mux.NewRouter()
 
-	resp, err := keycloak.CreateUser()
-	if err != nil {
-		fmt.Println("Errorrr")
-	}
-	fmt.Println("response ", resp)
+	//Route Handler / Endpoint
+
+	router.HandleFunc("/api/login").Methors("POST")
 
 }

@@ -30,16 +30,16 @@ type TokenResponse struct {
 }
 
 type User struct {
-	ID                         *string              `json:"id,omitempty"`
-	CreatedTimestamp           *int64               `json:"createdTimestamp,omitempty"`
-	Username                   *string              `json:"username,omitempty"`
-	Enabled                    *bool                `json:"enabled,omitempty"`
-	Totp                       *bool                `json:"totp,omitempty"`
-	EmailVerified              *bool                `json:"emailVerified,omitempty"`
-	FirstName                  *string              `json:"firstName,omitempty"`
-	LastName                   *string              `json:"lastName,omitempty"`
-	Email                      *string              `json:"email,omitempty"`
-	FederationLink             *string              `json:"federationLink,omitempty"`
+	ID                         string               `json:"id,omitempty"`
+	CreatedTimestamp           int64                `json:"createdTimestamp,omitempty"`
+	Username                   string               `json:"username,omitempty"`
+	Enabled                    bool                 `json:"enabled,omitempty"`
+	Totp                       bool                 `json:"totp,omitempty"`
+	EmailVerified              bool                 `json:"emailVerified,omitempty"`
+	FirstName                  string               `json:"firstName,omitempty"`
+	LastName                   string               `json:"lastName,omitempty"`
+	Email                      string               `json:"email,omitempty"`
+	FederationLink             string               `json:"federationLink,omitempty"`
 	Attributes                 *map[string][]string `json:"attributes,omitempty"`
 	DisableableCredentialTypes *[]interface{}       `json:"disableableCredentialTypes,omitempty"`
 	RequiredActions            *[]string            `json:"requiredActions,omitempty"`
@@ -47,5 +47,5 @@ type User struct {
 	ClientRoles                *map[string][]string `json:"clientRoles,omitempty"`
 	RealmRoles                 *[]string            `json:"realmRoles,omitempty"`
 	Groups                     *[]string            `json:"groups,omitempty"`
-	ServiceAccountClientID     *string              `json:"serviceAccountClientId,omitempty"`
+	ServiceAccountClientID     string               `json:"serviceAccountClientId,omitempty"`
 }
