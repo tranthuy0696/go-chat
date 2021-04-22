@@ -1,10 +1,12 @@
 package main
 
 import (
-	"log"
-
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
+	"go-chat/modules/authentication"
+	"log"
+	"net/http"
+	"os"
 )
 
 func main() {
@@ -19,8 +21,13 @@ func main() {
 	// Init Router
 	router := mux.NewRouter()
 
-	//Route Handler / Endpoint
+	//Route Handler /api/login Endpoint
 
-	router.HandleFunc("/api/login").Methors("POST")
+	router.HandleFunc("/api/login", authentication.Login).Methods("POST")
 
+	var httpPort = os.Getenv("HTTP_PORT")
+	if len(httpPort) == 0 {
+		httpPort = "8000"
+	}
+	log.Fatal(http.ListenAndServe(":"+httpPort, router))
 }
