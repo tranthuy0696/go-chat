@@ -1,12 +1,13 @@
 package main
 
 import (
-	"github.com/gorilla/mux"
-	"github.com/joho/godotenv"
 	"go-chat/modules/authentication"
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 )
 
 func main() {
@@ -24,6 +25,7 @@ func main() {
 	//Route Handler /api/login Endpoint
 
 	router.HandleFunc("/api/login", authentication.Login).Methods("POST")
+	// router.HandleFunc("/api/users").Methods("POST")
 
 	var httpPort = os.Getenv("HTTP_PORT")
 	if len(httpPort) == 0 {
