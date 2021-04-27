@@ -11,12 +11,20 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	var body User
 	json.NewDecoder(r.Body).Decode(&body)
 	if body.Password != body.PasswordConfirm {
-
-	}
-	token, err := keycloak.GetToken(body.Username, body.Password)
-	if err != nil {
-		json.NewEncoder(w).Encode(keycloak.TokenResponse{})
+		http.Error(w, "Passsword did not match!", http.StatusForbidden)
 		return
 	}
-	json.NewEncoder(w).Encode(token)
+	user := keycloak.User{
+		Username:  body.Username,
+		FirstName: body.FirstName,
+		LastName:  body.LastName,
+	}
+
+	response, err := keycloak.CreateUser(user)
+	if err != nil {
+		http.Error(w, "Bad Request!", http.StatusBadRequest)
+		return
+	}
+
+	json.NewEncoder(w).Encode(response)
 }

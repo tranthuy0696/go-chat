@@ -2,6 +2,7 @@ package main
 
 import (
 	"go-chat/modules/authentication"
+	"go-chat/modules/user"
 	"log"
 	"net/http"
 	"os"
@@ -25,7 +26,7 @@ func main() {
 	//Route Handler /api/login Endpoint
 
 	router.HandleFunc("/api/login", authentication.Login).Methods("POST")
-	// router.HandleFunc("/api/users").Methods("POST")
+	router.HandleFunc("/api/users", user.CreateUser).Methods("POST")
 
 	var httpPort = os.Getenv("HTTP_PORT")
 	if len(httpPort) == 0 {
